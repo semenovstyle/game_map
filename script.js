@@ -12,6 +12,10 @@ document.addEventListener("DOMContentLoaded", () => {
     7: "Карта собрана! Финальная точка - памятник основателю города. Удачи!",
   };
 
+  // --- СОЗДАНИЕ АУДИО ---
+  const unlockSound = new Audio("audio/obelisk.mp3");
+  unlockSound.volume = 0.7; // Можете настроить громкость (от 0.0 до 1.0)
+
   // --- ПОЛУЧЕНИЕ ЭЛЕМЕНТОВ СТРАНИЦЫ ---
   const puzzleWrapper = document.querySelector(".puzzle-wrapper");
   const finalMap = document.querySelector(".final-map");
@@ -20,17 +24,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const hintModal = document.getElementById("hint-modal");
   const hintText = document.getElementById("hint-text");
   const closeModalBtn = document.getElementById("close-modal-btn");
+
   const congratsModal = document.getElementById("congrats-modal");
   const resetButton = document.getElementById("reset-btn");
 
-  // --- ОСНОВНАЯ ЛОГИКА ---
+  // --- ПРОВЕРКА НА СБРОС ЧЕРЕЗ URL ---
+  // Этот блок должен идти до основной логики
+  const urlParamsForReset = new URLSearchParams(window.location.search);
+  if (urlParamsForReset.has("reset")) {
+    localStorage.removeItem("unlockedParts");
+    // Перенаправляем на чистый URL, чтобы параметр ?reset=true не остался в адресе
+    window.location.href = window.location.pathname;
+    return; // Прерываем выполнение скрипта, так как страница перезагрузится
+  }
+
+  // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
 
   // Функция для обновления вида пазла на основе сохраненного прогресса
-  function updatePuzzleView(unlockedParts) {
+  function updatePuzzleView(unlockedPartsArray) {
     masks.forEach((mask) => {
       const partId = mask.dataset.partId;
-      if (unlockedParts.includes(partId)) {
+      if (unlockedPartsArray.includes(partId)) {
         mask.classList.add("hidden");
+      } else {
+        mask.classList.remove("hidden");
       }
     });
   }
@@ -41,12 +58,13 @@ document.addEventListener("DOMContentLoaded", () => {
     finalMap.classList.remove("hidden");
     congratsModal.classList.remove("hidden");
 
-    // --- ДОБАВЛЕНА ЭТА ЧАСТЬ ---
     // Прячем поздравительное окно через 2 секунды (2000 миллисекунд)
     setTimeout(() => {
       congratsModal.classList.add("hidden");
     }, 2000);
   }
+
+  // --- ОСНОВНАЯ ЛОГИКА ---
 
   // 1. Инициализация при загрузке страницы
   // Пытаемся получить прогресс из localStorage. Если его нет, создаем пустой массив.
@@ -66,6 +84,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Если в URL есть ?part=... и этой части еще нет в нашем прогрессе
   if (partToUnlock && !unlockedParts.includes(partToUnlock)) {
+    // Проигрываем звук
+    unlockSound
+      .play()
+      .catch((error) =>
+        console.log(
+          "Не удалось воспроизвести звук до взаимодействия пользователя:",
+          error
+        )
+      );
+
     // Добавляем новую часть в массив прогресса
     unlockedParts.push(partToUnlock);
 
@@ -90,7 +118,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- ОБРАБОТЧИКИ СОБЫТИЙ ---
-  // === ДОБАВИТЬ ЭТОТ БЛОК ===
+
+  // Закрытие модального окна с подсказкой
+  closeModalBtn.addEventListener("click", () => {
+    hintModal.classList.add("hidden");
+  });
+
   // Обработка нажатия на кнопку "Начать заново"
   resetButton.addEventListener("click", () => {
     // 1. Очищаем данные о прогрессе из localStorage
@@ -99,11 +132,4 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. Перезагружаем страницу, чтобы начать с чистого листа
     window.location.href = window.location.pathname;
   });
-  // Закрытие модального окна с подсказкой
-  closeModalBtn.addEventListener("click", () => {
-    hintModal.classList.add("hidden");
-  });
-});
-closeModalBtn.addEventListener("click", () => {
-  hintModal.classList.add("hidden");
 });
