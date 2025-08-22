@@ -1,0 +1,127 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  /* Используем 100dvh, чтобы высота подстраивалась под видимую область 
+       даже при появлении/скрытии адресной строки в мобильных браузерах */
+  height: 100dvh;
+  overflow: hidden; /* Запрещаем прокрутку */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  background-color: #efefef; /* Сделал фон чуть светлее */
+}
+
+/* Контейнер для центрирования пазла на экране */
+.puzzle-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px; /* Немного уменьшил отступы для мобильных */
+}
+
+/* === КЛЮЧЕВОЕ ИЗМЕНЕНИЕ ЗДЕСЬ === */
+/* Обертка, которая содержит все слои изображений */
+.puzzle-wrapper {
+  position: relative;
+  width: 100%; /* Ширина теперь 100% от родителя с padding */
+  max-width: 500px;
+
+  /* Устанавливаем соотношение сторон.
+       ИЗМЕНИТЕ ЭТИ ЗНАЧЕНИЯ на свои!
+       Формат: ШИРИНА / ВЫСОТА.
+       Примеры:
+       - для квадратного изображения (1000x1000): aspect-ratio: 1 / 1;
+       - для альбомного (800x600): aspect-ratio: 800 / 600; или 4 / 3;
+       - для портретного (600x900): aspect-ratio: 600 / 900; или 2 / 3;
+    */
+  aspect-ratio: 1 / 2; /* <-- ЗАМЕНИТЕ НА ВАШЕ СООТНОШЕНИЕ СТОРОН! */
+}
+
+/* === ВТОРОЕ ИЗМЕНЕНИЕ === */
+/* Стили для всех изображений внутри обертки */
+.puzzle-piece,
+.puzzle-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* Теперь 100%, чтобы они полностью заполняли wrapper */
+  object-fit: contain; /* Гарантирует, что изображение впишется без искажений */
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* Финальная карта - стили аналогичны обертке */
+.final-map {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  aspect-ratio: 1 / 2; /* <-- У вас здесь ваше соотношение сторон */
+  transform: rotate(0deg); /* <-- ДОБАВЛЕНА ЭТА СТРОКА */
+}
+
+/* Стили для модальных окон (остаются без изменений) */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h2 {
+  margin-bottom: 15px;
+}
+
+.modal-content p {
+  margin-bottom: 20px;
+  font-size: 1.1em;
+  line-height: 1.5;
+}
+
+.modal-content button {
+  padding: 10px 25px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+}
+#reset-btn {
+  padding: 10px 25px;
+  border: none;
+  background-color: #6c757d; /* Другой цвет, чтобы отличалась */
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 10px; /* Отступ сверху */
+}
+/* Вспомогательный класс для скрытия элементов */
+.hidden {
+  display: none !important;
+}
