@@ -1,8 +1,10 @@
 import * as Quest from './quest.js';
 import * as UI from './ui.js';
 
+// --- Глобальные переменные модуля ---
 let config, html5QrCode, sound, debugUrlInput, debugSubmitBtn;
 
+// --- Функции-обработчики ---
 function processScannedUrl(decodedText) {
     try {
         const url = new URL(decodedText);
@@ -31,6 +33,7 @@ function onScanSuccess(decodedText) {
     processScannedUrl(decodedText);
 }
 
+// --- Инициализация и настройка ---
 function setupEventListeners() {
     UI.elements.enableSoundBtn.addEventListener('click', () => {
         sound.play(); sound.pause(); sound.currentTime = 0;
@@ -61,34 +64,39 @@ function setupEventListeners() {
         }
     });
 
-    UI.elements.resetBtn.addEventListener('click', () => {
-        Quest.resetProgress();
-        window.location.reload();
-    });
-
-    UI.elements.resetViewBtn.addEventListener('click', () => {
-        UI.toggleActivePanzoomView();
-    });
-
-    UI.elements.globalResetBtn.addEventListener('click', () => {
-        if (confirm("Вы уверены, что хотите начать квест заново? Весь прогресс будет утерян.")) {
+    // Проверяем, существует ли кнопка, прежде чем навешивать обработчик
+    if (UI.elements.resetBtn) {
+        UI.elements.resetBtn.addEventListener('click', () => {
             Quest.resetProgress();
             window.location.reload();
-        }
-    });
+        });
+    }
+
+    if (UI.elements.resetViewBtn) {
+        UI.elements.resetViewBtn.addEventListener('click', () => {
+            UI.toggleActivePanzoomView();
+        });
+    }
+
+    if (UI.elements.globalResetBtn) {
+        UI.elements.globalResetBtn.addEventListener('click', () => {
+            if (confirm("Вы уверены, что хотите начать квест заново? Весь прогресс будет утерян.")) {
+                Quest.resetProgress();
+                window.location.reload();
+            }
+        });
+    }
 
     if (debugSubmitBtn && debugUrlInput) {
         debugSubmitBtn.addEventListener('click', () => {
             const url = debugUrlInput.value;
-            if (url) {
-                processScannedUrl(url);
-                debugUrlInput.value = '';
-            }
+            if (url) { processScannedUrl(url); debugUrlInput.value = ''; }
         });
     }
 }
 
 async function initializeApp() {
+    // Получаем элементы для эмулятора
     debugUrlInput = document.getElementById('debug-url-input');
     debugSubmitBtn = document.getElementById('debug-submit-btn');
 
@@ -126,4 +134,7 @@ async function initializeApp() {
     }
 }
 
-initializeApp();
+// ===== ГЛАВНОЕ ИСПРАВЛЕНИЕ ЗДЕСЬ =====
+// Мы запускаем всю нашу логику только после того, как браузер
+// полностью построил HTML-структуру страницы.
+document.addEventListener('DOMContentLoaded', initializeApp);
