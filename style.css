@@ -1,127 +1,132 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+:root {
+    --primary-color: #007bff;
+    --primary-hover-color: #0056b3;
+    --secondary-color: #6c757d;
+    --secondary-hover-color: #5a6268;
+    --background-color: #2c2c2c;
+    --modal-background: #ffffff;
+    --text-color: #333333;
+    --light-text-color: #ffffff;
 }
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-  /* Используем 100dvh, чтобы высота подстраивалась под видимую область 
-       даже при появлении/скрытии адресной строки в мобильных браузерах */
-  height: 100dvh;
-  overflow: hidden; /* Запрещаем прокрутку */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
-  background-color: #efefef; /* Сделал фон чуть светлее */
+/* Базовые стили */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+    width: 100%; height: 100dvh; overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--background-color);
 }
 
-/* Контейнер для центрирования пазла на экране */
-.puzzle-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 15px; /* Немного уменьшил отступы для мобильных */
+/* Классы для экранов и модальных окон */
+.screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    opacity: 1; transition: opacity 0.5s ease-in-out;
 }
-
-/* === КЛЮЧЕВОЕ ИЗМЕНЕНИЕ ЗДЕСЬ === */
-/* Обертка, которая содержит все слои изображений */
-.puzzle-wrapper {
-  position: relative;
-  width: 100%; /* Ширина теперь 100% от родителя с padding */
-  max-width: 500px;
-
-  /* Устанавливаем соотношение сторон.
-       ИЗМЕНИТЕ ЭТИ ЗНАЧЕНИЯ на свои!
-       Формат: ШИРИНА / ВЫСОТА.
-       Примеры:
-       - для квадратного изображения (1000x1000): aspect-ratio: 1 / 1;
-       - для альбомного (800x600): aspect-ratio: 800 / 600; или 4 / 3;
-       - для портретного (600x900): aspect-ratio: 600 / 900; или 2 / 3;
-    */
-  aspect-ratio: 1 / 2; /* <-- ЗАМЕНИТЕ НА ВАШЕ СООТНОШЕНИЕ СТОРОН! */
-}
-
-/* === ВТОРОЕ ИЗМЕНЕНИЕ === */
-/* Стили для всех изображений внутри обертки */
-.puzzle-piece,
-.puzzle-mask {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%; /* Теперь 100%, чтобы они полностью заполняли wrapper */
-  object-fit: contain; /* Гарантирует, что изображение впишется без искажений */
-  transition: opacity 0.5s ease-in-out;
-}
-
-/* Финальная карта - стили аналогичны обертке */
-.final-map {
-  width: 100%;
-  max-width: 500px;
-  height: auto;
-  aspect-ratio: 1 / 2; /* <-- У вас здесь ваше соотношение сторон */
-  transform: rotate(0deg); /* <-- ДОБАВЛЕНА ЭТА СТРОКА */
-}
-
-/* Стили для модальных окон (остаются без изменений) */
 .modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.75);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 20px;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; justify-content: center; align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    opacity: 1; transition: opacity 0.5s ease-in-out;
+}
+.hidden { opacity: 0; pointer-events: none; }
+
+/* Иерархия слоев Z-INDEX */
+#quest-ui { justify-content: flex-start; z-index: 10; }
+#scanner-overlay { justify-content: center; align-items: center; background-color: rgba(0, 0, 0, 0.9); z-index: 100; }
+.modal { z-index: 1000; }
+.toast { z-index: 2000; }
+
+/* Контейнер для карт */
+#map-container { position: relative; width: 100%; height: 100%; }
+
+/* Окна просмотра (Viewport) */
+.viewport {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    overflow: hidden; touch-action: none;
+    display: flex; justify-content: center; align-items: center;
 }
 
+/* Стили самой карты и ее слоев */
+#puzzle-wrapper, #final-map {
+    cursor: grab;
+    flex-shrink: 0;
+}
+#puzzle-wrapper:active, #final-map:active { cursor: grabbing; }
+#puzzle-wrapper { position: relative; } /* Размеры задаются из JS */
+
+.puzzle-piece, .puzzle-mask {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    /* ===== ГЛАВНОЕ ИЗМЕНЕНИЕ ЗДЕСЬ ===== */
+    transition: opacity 1s ease; /* Плавный переход для свойства opacity */
+}
+
+#final-map { display: block; }
+
+/* Панель управления */
+.controls {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    padding: 15px; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    z-index: 20; display: flex; flex-direction: column; align-items: center; gap: 15px;
+}
+.controls-top-row {
+    display: flex; justify-content: center; align-items: center;
+    width: 100%; max-width: 400px; gap: 15px;
+}
+#progress-indicator {
+    flex-grow: 1; text-align: center; color: var(--light-text-color); font-size: 1.1em;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+/* Стили кнопок */
+.btn {
+    padding: 12px 28px; border: none; color: var(--light-text-color); border-radius: 8px;
+    cursor: pointer; font-size: 1em; font-weight: bold;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary { background-color: var(--primary-color); }
+.btn-primary:hover { background-color: var(--primary-hover-color); }
+.btn-scan { width: 100%; max-width: 400px; background-color: var(--primary-color); }
+.btn-secondary { background-color: var(--secondary-color); }
+.btn-secondary:hover { background-color: var(--secondary-hover-color); }
+.btn-icon {
+    flex-shrink: 0; width: 44px; height: 44px; padding: 0; border-radius: 50%;
+    font-size: 24px; line-height: 44px; background-color: var(--secondary-color);
+}
+
+/* Стили модальных окон */
 .modal-content {
-  background-color: #fff;
-  padding: 25px;
-  border-radius: 10px;
-  text-align: center;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    background-color: var(--modal-background); padding: 25px; border-radius: 10px;
+    text-align: center; width: 90%; max-width: 400px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.modal-content h1, .modal-content h2 { margin-bottom: 15px; }
+.modal-content p { margin-bottom: 20px; font-size: 1.1em; line-height: 1.5; }
+#congrats-title { color: var(--primary-color); }
+#reset-btn { margin-top: 15px; }
+
+/* Глобальная кнопка "X" */
+#global-reset-btn {
+    position: fixed; top: 15px; right: 15px; width: 40px; height: 40px;
+    border-radius: 50%; border: none; background-color: rgba(0, 0, 0, 0.5);
+    color: white; font-size: 24px; font-weight: bold; line-height: 40px; text-align: center;
+    cursor: pointer; z-index: 1001; transition: all 0.2s ease;
+}
+#global-reset-btn:hover { background-color: rgba(255, 0, 0, 0.7); transform: scale(1.1); }
+
+/* Элементы сканера и уведомлений */
+#qr-reader { width: 90%; max-width: 400px; border-radius: 10px; overflow: hidden; border: 3px solid var(--primary-color); }
+#cancel-scan-btn { margin-top: 20px; }
+.toast {
+    position: fixed; bottom: 180px; left: 50%; transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8); color: white; padding: 10px 20px;
+    border-radius: 20px;
 }
 
-.modal-content h2 {
-  margin-bottom: 15px;
-}
-
-.modal-content p {
-  margin-bottom: 20px;
-  font-size: 1.1em;
-  line-height: 1.5;
-}
-
-.modal-content button {
-  padding: 10px 25px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1em;
-}
-#reset-btn {
-  padding: 10px 25px;
-  border: none;
-  background-color: #6c757d; /* Другой цвет, чтобы отличалась */
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1em;
-  margin-top: 10px; /* Отступ сверху */
-}
-/* Вспомогательный класс для скрытия элементов */
-.hidden {
-  display: none !important;
-}
+/* Блок для тестирования */
+#debug-scanner { width: 100%; max-width: 400px; padding-top: 15px; border-top: 1px solid #555; color: #ccc; font-size: 0.9em; }
+#debug-scanner p { margin-bottom: 5px; }
+#debug-url-input { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #555; background-color: #333; color: #fff; }
+#debug-submit-btn { width: 100%; padding: 8px; font-size: 0.9em; }

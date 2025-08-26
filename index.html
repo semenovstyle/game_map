@@ -1,95 +1,41 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Карта-Пазл Квест</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <!-- Основной контейнер для центрирования пазла -->
-    <div class="puzzle-container">
-      <!-- Обертка для всех частей пазла, задает размер и позицию -->
-      <div class="puzzle-wrapper">
-        <!-- Базовые части карты (1-7.png) -->
-        <img src="img/1.png" class="puzzle-piece" alt="Часть пазла 1" />
-        <img src="img/2.png" class="puzzle-piece" alt="Часть пазла 2" />
-        <img src="img/3.png" class="puzzle-piece" alt="Часть пазла 3" />
-        <img src="img/4.png" class="puzzle-piece" alt="Часть пазла 4" />
-        <img src="img/5.png" class="puzzle-piece" alt="Часть пазла 5" />
-        <img src="img/6.png" class="puzzle-piece" alt="Часть пазла 6" />
-        <img src="img/7.png" class="puzzle-piece" alt="Часть пазла 7" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Интерактивный Квест</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-        <!-- Маски, которые лежат поверх (11-77.png) -->
-        <img
-          src="img/11.png"
-          class="puzzle-mask"
-          data-part-id="1"
-          alt="Маска 1"
-        />
-        <img
-          src="img/22.png"
-          class="puzzle-mask"
-          data-part-id="2"
-          alt="Маска 2"
-        />
-        <img
-          src="img/33.png"
-          class="puzzle-mask"
-          data-part-id="3"
-          alt="Маска 3"
-        />
-        <img
-          src="img/44.png"
-          class="puzzle-mask"
-          data-part-id="4"
-          alt="Маска 4"
-        />
-        <img
-          src="img/55.png"
-          class="puzzle-mask"
-          data-part-id="5"
-          alt="Маска 5"
-        />
-        <img
-          src="img/66.png"
-          class="puzzle-mask"
-          data-part-id="6"
-          alt="Маска 6"
-        />
-        <img
-          src="img/77.png"
-          class="puzzle-mask"
-          data-part-id="7"
-          alt="Маска 7"
-        />
-      </div>
-
-      <!-- Финальная карта, изначально скрыта -->
-      <img src="img/map.png" class="final-map hidden" alt="Финальная карта" />
+    <div id="welcome-screen" class="modal">
+        <div class="modal-content"><h1 id="welcome-title"></h1><p id="welcome-text"></p><button id="enable-sound-btn" class="btn btn-primary">Включить звук и начать</button></div>
     </div>
 
-    <!-- Модальное окно для подсказок (карточка), изначально скрыто -->
-    <div id="hint-modal" class="modal hidden">
-      <div class="modal-content">
-        <p id="hint-text"></p>
-        <button id="close-modal-btn">Продолжить</button>
-      </div>
+    <div id="quest-ui" class="screen hidden">
+        <div id="map-container">
+            <div id="puzzle-viewport" class="viewport">
+                <div id="puzzle-wrapper">
+                    <img src="img/1.png" class="puzzle-piece" alt=""><img src="img/2.png" class="puzzle-piece" alt=""><img src="img/3.png" class="puzzle-piece" alt=""><img src="img/4.png" class="puzzle-piece" alt=""><img src="img/5.png" class="puzzle-piece" alt=""><img src="img/6.png" class="puzzle-piece" alt=""><img src="img/7.png" class="puzzle-piece" alt=""><img src="img/11.png" class="puzzle-mask" data-part-id="1" alt=""><img src="img/22.png" class="puzzle-mask" data-part-id="2" alt=""><img src="img/33.png" class="puzzle-mask" data-part-id="3" alt=""><img src="img/44.png" class="puzzle-mask" data-part-id="4" alt=""><img src="img/55.png" class="puzzle-mask" data-part-id="5" alt=""><img src="img/66.png" class="puzzle-mask" data-part-id="6" alt=""><img src="img/77.png" class="puzzle-mask" data-part-id="7" alt="">
+                </div>
+            </div>
+            <div id="final-map-viewport" class="viewport hidden"><img src="img/map.png" id="final-map" alt="Финальная карта"></div>
+        </div>
+        <div class="controls">
+            <div class="controls-top-row"><div id="progress-indicator"></div><button id="reset-view-btn" class="btn btn-icon" title="Сбросить вид">&#x26F6;</button></div>
+            <button id="scan-btn" class="btn btn-scan">Сканировать QR-код</button>
+            <div id="debug-scanner"><p>Для теста:</p><input type="text" id="debug-url-input" placeholder="Вставьте сюда ссылку QR-кода"><button id="debug-submit-btn" class="btn btn-secondary">Имитировать скан</button></div>
+        </div>
     </div>
 
-    <!-- Модальное окно для поздравления, изначально скрыто -->
+    <button id="global-reset-btn" class="hidden">&times;</button>
+    <div id="scanner-overlay" class="screen hidden"><div id="qr-reader"></div><button id="cancel-scan-btn" class="btn btn-secondary">Отмена</button></div>
+    <div id="hint-modal" class="modal hidden"><div class="modal-content"><p id="hint-text"></p><button id="close-modal-btn" class="btn btn-primary">Продолжить</button></div></div>
+    <div id="congrats-modal" class="modal hidden"><div class="modal-content"><h2 id="congrats-title">Поздравляем!</h2><p id="congrats-text"></p></div></div>
+    <div id="feedback-toast" class="toast hidden"></div>
 
-    <div id="congrats-modal" class="modal hidden">
-      <div class="modal-content">
-        <h2>Поздравляем!</h2>
-        <p>Вы успешно собрали всю карту и завершили квест!</p>
-
-        <!-- === ДОБАВЛЕНА ЭТА КНОПКА === -->
-        <button id="reset-btn">Начать заново</button>
-      </div>
-    </div>
-
-    <!-- Подключаем наш скрипт -->
-    <script src="script.js"></script>
-  </body>
+    <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
 </html>
