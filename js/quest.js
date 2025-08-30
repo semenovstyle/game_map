@@ -1,1 +1,37 @@
-const STORAGE_KEY="questProgress";let state={unlockedParts:[]};export function loadProgress(){const t=localStorage.getItem(STORAGE_KEY);return t&&(state.unlockedParts=JSON.parse(t)),state.unlockedParts}export function saveProgress(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state.unlockedParts))}export function unlockPart(t){return!state.unlockedParts.includes(t)&&(state.unlockedParts.push(t),!0)}export function getUnlockedCount(){return state.unlockedParts.length}export function isComplete(t){return state.unlockedParts.length===t}export function resetProgress(){state.unlockedParts=[],localStorage.removeItem(STORAGE_KEY)}
+const STORAGE_KEY = "questProgress";
+let state = {
+  unlockedParts: [],
+};
+
+export function loadProgress() {
+  const savedProgress = localStorage.getItem(STORAGE_KEY);
+  if (savedProgress) {
+    state.unlockedParts = JSON.parse(savedProgress);
+  }
+  return state.unlockedParts;
+}
+
+export function saveProgress() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.unlockedParts));
+}
+
+export function unlockPart(partId) {
+  if (!state.unlockedParts.includes(partId)) {
+    state.unlockedParts.push(partId);
+    return true;
+  }
+  return false;
+}
+
+export function getUnlockedCount() {
+  return state.unlockedParts.length;
+}
+
+export function isComplete(totalParts) {
+  return state.unlockedParts.length === totalParts;
+}
+
+export function resetProgress() {
+  state.unlockedParts = [];
+  localStorage.removeItem(STORAGE_KEY);
+}

@@ -1,41 +1,131 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
     <title>Интерактивный Квест</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div id="welcome-screen" class="modal">
-        <div class="modal-content"><h1 id="welcome-title"></h1><p id="welcome-text"></p><button id="enable-sound-btn" class="btn btn-primary">Включить звук и начать</button></div>
+      <div class="modal-content">
+        <h1 id="welcome-title"></h1>
+        <p id="welcome-text"></p>
+        <button id="enable-sound-btn" class="btn btn-primary">
+          Включить звук и начать
+        </button>
+      </div>
     </div>
 
     <div id="quest-ui" class="screen hidden">
-        <div id="map-container">
-            <div id="puzzle-viewport" class="viewport">
-                <div id="puzzle-wrapper">
-                    <img src="img/1.png" class="puzzle-piece" alt=""><img src="img/2.png" class="puzzle-piece" alt=""><img src="img/3.png" class="puzzle-piece" alt=""><img src="img/4.png" class="puzzle-piece" alt=""><img src="img/5.png" class="puzzle-piece" alt=""><img src="img/6.png" class="puzzle-piece" alt=""><img src="img/7.png" class="puzzle-piece" alt=""><img src="img/11.png" class="puzzle-mask" data-part-id="1" alt=""><img src="img/22.png" class="puzzle-mask" data-part-id="2" alt=""><img src="img/33.png" class="puzzle-mask" data-part-id="3" alt=""><img src="img/44.png" class="puzzle-mask" data-part-id="4" alt=""><img src="img/55.png" class="puzzle-mask" data-part-id="5" alt=""><img src="img/66.png" class="puzzle-mask" data-part-id="6" alt=""><img src="img/77.png" class="puzzle-mask" data-part-id="7" alt="">
-                </div>
-            </div>
-            <div id="final-map-viewport" class="viewport hidden"><img src="img/map.png" id="final-map" alt="Финальная карта"></div>
+      <div id="map-container">
+        <div id="puzzle-viewport" class="viewport">
+          <div id="puzzle-wrapper">
+            <img src="img/1.png" class="puzzle-piece" alt="" /><img
+              src="img/2.png"
+              class="puzzle-piece"
+              alt=""
+            /><img src="img/3.png" class="puzzle-piece" alt="" /><img
+              src="img/4.png"
+              class="puzzle-piece"
+              alt=""
+            /><img src="img/5.png" class="puzzle-piece" alt="" /><img
+              src="img/6.png"
+              class="puzzle-piece"
+              alt=""
+            /><img src="img/7.png" class="puzzle-piece" alt="" /><img
+              src="img/11.png"
+              class="puzzle-mask"
+              data-part-id="1"
+              alt=""
+            /><img
+              src="img/22.png"
+              class="puzzle-mask"
+              data-part-id="2"
+              alt=""
+            /><img
+              src="img/33.png"
+              class="puzzle-mask"
+              data-part-id="3"
+              alt=""
+            /><img
+              src="img/44.png"
+              class="puzzle-mask"
+              data-part-id="4"
+              alt=""
+            /><img
+              src="img/55.png"
+              class="puzzle-mask"
+              data-part-id="5"
+              alt=""
+            /><img
+              src="img/66.png"
+              class="puzzle-mask"
+              data-part-id="6"
+              alt=""
+            /><img
+              src="img/77.png"
+              class="puzzle-mask"
+              data-part-id="7"
+              alt=""
+            />
+          </div>
         </div>
-        <div class="controls">
-            <div class="controls-top-row"><div id="progress-indicator"></div><button id="reset-view-btn" class="btn btn-icon" title="Сбросить вид">&#x26F6;</button></div>
-            <button id="scan-btn" class="btn btn-scan">Сканировать QR-код</button>
-            <!-- <div id="debug-scanner"><p>Для теста:</p><input type="text" id="debug-url-input" placeholder="Вставьте сюда ссылку QR-кода"><button id="debug-submit-btn" class="btn btn-secondary">Имитировать скан</button></div> -->
+        <div id="final-map-viewport" class="viewport hidden">
+          <img src="img/map.png" id="final-map" alt="Финальная карта" />
         </div>
+      </div>
+      <div class="controls">
+        <div class="controls-top-row">
+          <div id="progress-indicator"></div>
+          <button id="reset-view-btn" class="btn btn-icon" title="Сбросить вид">
+            &#x26F6;
+          </button>
+        </div>
+        <button id="scan-btn" class="btn btn-scan">Сканировать QR-код</button>
+        <div id="debug-scanner">
+          <p>Для теста:</p>
+          <input
+            type="text"
+            id="debug-url-input"
+            placeholder="Вставьте сюда ссылку QR-кода"
+          /><button id="debug-submit-btn" class="btn btn-secondary">
+            Имитировать скан
+          </button>
+        </div>
+      </div>
     </div>
 
     <button id="global-reset-btn" class="hidden">&times;</button>
-    <div id="scanner-overlay" class="screen hidden"><div id="qr-reader"></div><button id="cancel-scan-btn" class="btn btn-secondary">Отмена</button></div>
-    <div id="hint-modal" class="modal hidden"><div class="modal-content"><p id="hint-text"></p><button id="close-modal-btn" class="btn btn-primary">Продолжить</button></div></div>
-    <div id="congrats-modal" class="modal hidden"><div class="modal-content"><h2 id="congrats-title">Поздравляем!</h2><p id="congrats-text"></p></div></div>
+    <div id="scanner-overlay" class="screen hidden">
+      <div id="qr-reader"></div>
+      <button id="cancel-scan-btn" class="btn btn-secondary">Отмена</button>
+    </div>
+    <div id="hint-modal" class="modal hidden">
+      <div class="modal-content">
+        <p id="hint-text"></p>
+        <div id="audio-riddle-controls" class="hidden">
+          <button id="play-riddle-btn" class="btn btn-icon">&#9658;</button>
+          <!-- ► -->
+          <button id="stop-riddle-btn" class="btn btn-icon">&#9724;</button>
+          <!-- ⏹ -->
+        </div>
+        <button id="close-modal-btn" class="btn btn-primary">Продолжить</button>
+      </div>
+    </div>
+    <div id="congrats-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2 id="congrats-title">Поздравляем!</h2>
+        <p id="congrats-text"></p>
+      </div>
+    </div>
     <div id="feedback-toast" class="toast hidden"></div>
 
     <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script type="module" src="js/main.js"></script>
-</body>
+  </body>
 </html>
