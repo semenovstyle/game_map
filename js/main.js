@@ -121,10 +121,10 @@ function setupEventListeners() {
     }
   });
 
-  UI.elements.resetBtn.addEventListener("click", () => {
-    Quest.resetProgress();
-    window.location.reload();
-  });
+  //   UI.elements.resetBtn.addEventListener("click", () => {
+  //     Quest.resetProgress();
+  //     window.location.reload();
+  //   });
 
   UI.elements.resetViewBtn.addEventListener("click", () => {
     UI.toggleActivePanzoomView();

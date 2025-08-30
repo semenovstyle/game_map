@@ -178,3 +178,9 @@ export function showGlobalResetBtn() {
 export function hideGlobalResetBtn() {
   elements.globalResetBtn.classList.add("hidden");
 }
+// export const elements = {
+//     // ...существующие элементы...
+//     // resetBtn: document.getElementById("reset-btn"), // Удалить эту строку, так как элемента нет в HTML
+//     globalResetBtn: document.getElementById("global-reset-btn"),
+//     // ...остальные элементы...
+// };
